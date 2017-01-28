@@ -2,37 +2,100 @@ module Pages.Dashboard.View exposing (view)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick)
-import Item.Model exposing (Item, ItemId)
-import User.Model exposing (User)
+import Pages.Dashboard.Model exposing (..)
 
 
-view : User -> ItemsDict -> Html Msg
-view currentUser items =
+view : Model -> Html Msg
+view model =
     div []
         [ h1 [ class "ui header" ] [ text "Dashboard" ]
-        , div [ class "ui divider" ] []
-        , viewActiveIncidents items
+        , div
+            [ class "ui divider" ]
+            [ viewSuspects model.suspects
+            , viewWeapons model.weapons
+            ]
         ]
 
 
-viewActiveIncidents : ItemsDict -> Html Msg
-viewActiveIncidents items =
-    let
-        orderedIncidentes =
-            getOrderedIncidents items
-    in
-        -- @todo: Filter out
-        if (List.isEmpty orderedIncidentes) then
-            div [ style [ ( "font-size", "300%" ) ] ]
-                [ i [ class "ui icon check circle teal huge" ] []
-                , text "No active incidents!"
+viewSuspects : List Suspect -> Html Msg
+viewSuspects suspects =
+    div
+        [ class "suspects-container" ]
+        (h2 [] [ text "List of suspects" ]
+            :: List.map viewSuspect suspects
+        )
+
+
+viewSuspect : Suspect -> Html Msg
+viewSuspect suspect =
+    div
+        [ class "suspect-wrapper" ]
+        [ h3
+            [ class "suspect" ]
+            [ text suspect.name ]
+        , viewDiscardMessage suspect
+        , viewReasons suspect.possibleReasons
+        ]
+
+
+viewReasons : List Reason -> Html Msg
+viewReasons reasons =
+    ul
+        []
+        (List.map viewReason reasons)
+
+
+viewReason : Reason -> Html Msg
+viewReason reason =
+    li
+        []
+        [ div
+            []
+            [ text reason.name ]
+        , div
+            []
+            [ strong [] [ text <| toString reason.kind ] ]
+        , viewDiscardMessage reason
+        ]
+
+
+viewWeapons : List Weapon -> Html Msg
+viewWeapons weapons =
+    div
+        [ class "weapons-container" ]
+        [ h2 [] [ text "List of Weapons" ]
+        , table
+            []
+            (tr
+                []
+                [ td [ class "name" ] [ text "Name" ]
+                , td [ class "type" ] [ text "Type" ]
+                , td [ class "symptoms" ] [ text "Symptoms" ]
+                , td [ class "discarded" ] [ text "Is discarded?" ]
                 ]
-        else
-            div [ class "ui cards" ]
-                (List.map
-                    (\{ itemId, item, incidentId, incident } ->
-                        Html.map (MsgIncident itemId incidentId) (Incident.View.view ( itemId, item ) ( incidentId, incident ) IncidentViewFull)
-                    )
-                    orderedIncidentes
-                )
+                :: List.map viewWeapon weapons
+            )
+        ]
+
+
+viewWeapon : Weapon -> Html Msg
+viewWeapon weapon =
+    tr
+        []
+        [ td [ class "name" ] [ text weapon.name ]
+        , td [ class "type" ] [ text <| toString weapon.kind ]
+        , td [ class "symptoms" ] [ text <| toString weapon.symptoms ]
+        , td [ class "discarded" ] [ viewDiscardMessage weapon ]
+        ]
+
+
+viewDiscardMessage : { a | discarded : Bool } -> Html Msg
+viewDiscardMessage object =
+    if .discarded object then
+        div
+            []
+            [ text "Discarded" ]
+    else
+        div
+            []
+            [ text "Not discarded" ]

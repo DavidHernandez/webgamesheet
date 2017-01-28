@@ -1,15 +1,15 @@
 module Main exposing (..)
 
-import App.Model exposing (Flags, Model, Msg)
+import App.Model exposing (Model, Msg)
 import App.Update exposing (init, update, subscriptions)
 import App.Router exposing (..)
 import App.View exposing (view)
-import RouteUrl
+import RouteUrl exposing (RouteUrlProgram)
 
 
-main : RouteUrl.RouteUrlProgram Flags Model Msg
+main : RouteUrl.RouteUrlProgram Never Model Msg
 main =
-    RouteUrl.programWithFlags
+    RouteUrl.program
         { delta2url = delta2url
         , location2messages = location2messages
         , init = App.Update.init
