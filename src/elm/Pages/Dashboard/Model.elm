@@ -8,6 +8,7 @@ type Msg
 type alias Model =
     { suspects : List Suspect
     , weapons : List Weapon
+    , locations : List Location
     }
 
 
@@ -63,9 +64,23 @@ type Symptom
     | StrongSmells
 
 
+type alias Location =
+    { name : String
+    , weapons : List Weapon
+    , numberOfPeople : Int
+    , peopleOnIt : Presence Suspect
+    }
+
+
+type Presence suspect
+    = WasHere suspect
+    | WasNotHere suspect
+    | NotConfirmed suspect
+
+
 emptyGame : Model
 emptyGame =
-    Model suspects weapons
+    Model suspects weapons locations
 
 
 suspects : List Suspect
@@ -115,26 +130,141 @@ suspects =
     ]
 
 
+wrench : Weapon
+wrench =
+    Weapon "Wrench" Forceful ( Oil, StrongSmells ) False
+
+
+shovel : Weapon
+shovel =
+    Weapon "Shovel" Forceful ( Bruise, Dirt ) False
+
+
+pan : Weapon
+pan =
+    Weapon "Frying pan" Forceful ( Oil, DarkPowder ) False
+
+
+cue : Weapon
+cue =
+    Weapon "Cue" Forceful ( DeffensiveWounds, DarkPowder ) False
+
+
+shotgun : Weapon
+shotgun =
+    Weapon "Hunting shotgun" Gun ( Fight, Burns ) False
+
+
+revolver : Weapon
+revolver =
+    Weapon "Revolver" Gun ( Blood, StrongSmells ) False
+
+
+deringer : Weapon
+deringer =
+    Weapon "Deringer" Gun ( DeffensiveWounds, Burns ) False
+
+
+gun : Weapon
+gun =
+    Weapon "Big Gun" Gun ( AttackedFromBehind, DarkPowder ) False
+
+
+knife : Weapon
+knife =
+    Weapon "Kitchen Knife" Knife ( DeffensiveWounds, Blood ) False
+
+
+machete : Weapon
+machete =
+    Weapon "Machete" Knife ( AttackedFromBehind, Dirt ) False
+
+
+letterOpener : Weapon
+letterOpener =
+    Weapon "Letter opener" Knife ( AttackedFromBehind, Bruise ) False
+
+
+sabre : Weapon
+sabre =
+    Weapon "Sabre" Knife ( Blood, Fight ) False
+
+
+antifreeze : Weapon
+antifreeze =
+    Weapon "Antifreeze" Poison ( Bruise, Oil ) False
+
+
+pesticide : Weapon
+pesticide =
+    Weapon "Pesticide" Poison ( Burns, StrongSmells ) False
+
+
+ratPoison : Weapon
+ratPoison =
+    Weapon "Rat poison" Poison ( Oil, DarkPowder ) False
+
+
+plant : Weapon
+plant =
+    Weapon "Poisoning plant" Poison ( Dirt, Oil ) False
+
+
+belt : Weapon
+belt =
+    Weapon "Leather belt" Suffocating ( AttackedFromBehind, StrongSmells ) False
+
+
+rope : Weapon
+rope =
+    Weapon "Rope" Suffocating ( Dirt, Burns ) False
+
+
+pillow : Weapon
+pillow =
+    Weapon "Pillow" Suffocating ( Bruise, Fight ) False
+
+
+cord : Weapon
+cord =
+    Weapon "Curtain cord" Suffocating ( DeffensiveWounds, Fight ) False
+
+
 weapons : List Weapon
 weapons =
-    [ Weapon "Wrench" Forceful ( Oil, StrongSmells ) False
-    , Weapon "Shovel" Forceful ( Bruise, Dirt ) False
-    , Weapon "Frying pan" Forceful ( Oil, DarkPowder ) False
-    , Weapon "Cue" Forceful ( DeffensiveWounds, DarkPowder ) False
-    , Weapon "Hunting shotgun" Gun ( Fight, Burns ) False
-    , Weapon "Revolver" Gun ( Blood, StrongSmells ) False
-    , Weapon "Deringer" Gun ( DeffensiveWounds, Burns ) False
-    , Weapon "Big Gun" Gun ( AttackedFromBehind, DarkPowder ) False
-    , Weapon "Kitchen Knife" Knife ( DeffensiveWounds, Blood ) False
-    , Weapon "Machete" Knife ( AttackedFromBehind, Dirt ) False
-    , Weapon "Letter opener" Knife ( AttackedFromBehind, Bruise ) False
-    , Weapon "Sabre" Knife ( Blood, Fight ) False
-    , Weapon "Antifreeze" Poison ( Bruise, Oil ) False
-    , Weapon "Pesticide" Poison ( Burns, StrongSmells ) False
-    , Weapon "Rat poison" Poison ( Oil, DarkPowder ) False
-    , Weapon "Poisoning plant" Poison ( Dirt, Oil ) False
-    , Weapon "Leather belt" Suffocating ( AttackedFromBehind, StrongSmells ) False
-    , Weapon "Rope" Suffocating ( Dirt, Burns ) False
-    , Weapon "Pillow" Suffocating ( Bruise, Fight ) False
-    , Weapon "Curtain cord" Suffocating ( DeffensiveWounds, Fight ) False
+    [ wrench
+    , shovel
+    , pan
+    , cue
+    , shotgun
+    , revolver
+    , deringer
+    , gun
+    , knife
+    , machete
+    , letterOpener
+    , sabre
+    , antifreeze
+    , pesticide
+    , ratPoison
+    , plant
+    , belt
+    , rope
+    , pillow
+    , cord
+    ]
+
+
+locations : List Location
+locations =
+    [ Location "Garage" [ wrench, antifreeze, belt ] 0 []
+    , Location "Hunting pavilion" [ shotgun, machete, deringer ] 0 []
+    , Location "Billiard room" [ cue ] 0 []
+    , Location "Bedroom" [ pillow, revolver, letterOpener, plant ] 0 []
+    , Location "Hall" [ sabre ] 0 []
+    , Location "Office" [] 0 []
+    , Location "Kitchen" [ pan, knife, ratPoison ] 0 []
+    , Location "Shed" [ shovel, pesticide, rope ] 0 []
+    , Location "Living room" [ gun ] 0 []
+    , Location "Library" [ cord ] 0 []
     ]
