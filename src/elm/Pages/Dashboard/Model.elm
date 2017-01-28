@@ -2,7 +2,9 @@ module Pages.Dashboard.Model exposing (..)
 
 
 type Msg
-    = NoOp
+    = DiscardReason Reason
+    | DiscardSuspect Suspect
+    | DiscardWeapon Weapon
 
 
 type alias Model =
@@ -67,15 +69,22 @@ type Symptom
 type alias Location =
     { name : String
     , weapons : List Weapon
-    , numberOfPeople : Int
-    , peopleOnIt : Presence Suspect
+    , numberOfPeople : Maybe Int
+    , peopleOnIt : List Suspect
     }
 
 
-type Presence suspect
-    = WasHere suspect
-    | WasNotHere suspect
-    | NotConfirmed suspect
+type ItemType
+    = ReasonType
+    | SuspectType
+    | WeaponType
+
+
+
+--type Presence suspect
+--= WasHere suspect
+--| WasNotHere suspect
+--| NotConfirmed suspect
 
 
 emptyGame : Model
@@ -257,14 +266,14 @@ weapons =
 
 locations : List Location
 locations =
-    [ Location "Garage" [ wrench, antifreeze, belt ] 0 []
-    , Location "Hunting pavilion" [ shotgun, machete, deringer ] 0 []
-    , Location "Billiard room" [ cue ] 0 []
-    , Location "Bedroom" [ pillow, revolver, letterOpener, plant ] 0 []
-    , Location "Hall" [ sabre ] 0 []
-    , Location "Office" [] 0 []
-    , Location "Kitchen" [ pan, knife, ratPoison ] 0 []
-    , Location "Shed" [ shovel, pesticide, rope ] 0 []
-    , Location "Living room" [ gun ] 0 []
-    , Location "Library" [ cord ] 0 []
+    [ Location "Garage" [ wrench, antifreeze, belt ] Nothing []
+    , Location "Hunting pavilion" [ shotgun, machete, deringer ] Nothing []
+    , Location "Billiard room" [ cue ] Nothing []
+    , Location "Bedroom" [ pillow, revolver, letterOpener, plant ] Nothing []
+    , Location "Hall" [ sabre ] Nothing []
+    , Location "Office" [] Nothing []
+    , Location "Kitchen" [ pan, knife, ratPoison ] Nothing []
+    , Location "Shed" [ shovel, pesticide, rope ] Nothing []
+    , Location "Living room" [ gun ] Nothing []
+    , Location "Library" [ cord ] Nothing []
     ]

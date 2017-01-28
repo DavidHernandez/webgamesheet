@@ -1,18 +1,19 @@
 module Pages.Dashboard.View exposing (view)
 
 import Html exposing (..)
-import Html.Attributes exposing (..)
+import Html.Attributes exposing (class)
+import Html.Events exposing (onClick)
 import Pages.Dashboard.Model exposing (..)
 
 
 view : Model -> Html Msg
 view model =
     div []
-        [ h1 [ class "ui header" ] [ text "Dashboard" ]
-        , div
+        [ div
             [ class "ui divider" ]
             [ viewSuspects model.suspects
             , viewWeapons model.weapons
+            , viewLocations model.locations
             ]
         ]
 
@@ -33,7 +34,7 @@ viewSuspect suspect =
         [ h3
             [ class "suspect" ]
             [ text suspect.name ]
-        , viewDiscardMessage suspect
+        , viewDiscardMessage <| DiscardSuspect suspect
         , viewReasons suspect.possibleReasons
         ]
 
@@ -55,7 +56,7 @@ viewReason reason =
         , div
             []
             [ strong [] [ text <| toString reason.kind ] ]
-        , viewDiscardMessage reason
+        , viewDiscardMessage <| DiscardReason reason
         ]
 
 
@@ -85,17 +86,76 @@ viewWeapon weapon =
         [ td [ class "name" ] [ text weapon.name ]
         , td [ class "type" ] [ text <| toString weapon.kind ]
         , td [ class "symptoms" ] [ text <| toString weapon.symptoms ]
-        , td [ class "discarded" ] [ viewDiscardMessage weapon ]
+        , td [ class "discarded" ] [ viewDiscardMessage <| DiscardWeapon weapon ]
         ]
 
 
-viewDiscardMessage : { a | discarded : Bool } -> Html Msg
-viewDiscardMessage object =
-    if .discarded object then
-        div
+viewLocations : List Location -> Html Msg
+viewLocations locations =
+    div
+        [ class "locations-container" ]
+        [ h2 [] [ text "Locations" ]
+        , table
             []
-            [ text "Discarded" ]
-    else
-        div
-            []
-            [ text "Not discarded" ]
+            (tr
+                []
+                [ td [ class "name" ] [ text "Name" ]
+                , td [ class "weapons" ] [ text "Weapons on it" ]
+                , td [ class "number-of-people" ] [ text "Number of people" ]
+                , td [ class "who-was-here" ] [ text "Who was here" ]
+                ]
+                :: List.map viewLocation locations
+            )
+        ]
+
+
+viewLocation : Location -> Html Msg
+viewLocation location =
+    tr
+        []
+        [ td [ class "name" ] [ text location.name ]
+        , td [ class "weapons" ] [ text <| viewNameOfItems location.weapons ]
+        , td [ class "number-of-people" ] [ text <| viewNumberOfPeople location.numberOfPeople ]
+        , td [ class "who-was-here" ] [ text <| viewNameOfItems location.peopleOnIt ]
+        ]
+
+
+viewNameOfItems : List { a | name : String } -> String
+viewNameOfItems items =
+    String.concat <|
+        List.intersperse ", " <|
+            List.map .name items
+
+
+viewNumberOfPeople : Maybe Int -> String
+viewNumberOfPeople amount =
+    case amount of
+        Nothing ->
+            "Unknown"
+
+        Just aNumber ->
+            toString amount
+
+
+viewDiscardMessage : Msg -> Html Msg
+viewDiscardMessage msg =
+    let
+        isDiscarded =
+            case msg of
+                DiscardReason reason ->
+                    reason.discarded
+
+                DiscardSuspect suspect ->
+                    suspect.discarded
+
+                DiscardWeapon weapon ->
+                    weapon.discarded
+    in
+        if isDiscarded then
+            div
+                []
+                [ text "Discarded" ]
+        else
+            div
+                [ onClick <| msg ]
+                [ text "Not discarded" ]
